@@ -1,15 +1,95 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
   <title>Jalal Barbecue POS</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body { font-family: sans-serif; margin: 2em; }
+    body { font-family: sans-serif; margin: 20px; }
     h1 { color: #a52a2a; }
+    .menu-section { margin-bottom: 20px; }
+    .item { margin-bottom: 5px; }
+    button { margin: 5px 5px 5px 0; }
+    #cart { border-top: 1px solid #ccc; margin-top: 20px; padding-top: 10px; }
   </style>
 </head>
 <body>
-  <h1>Welcome to Jalal Barbecue POS</h1>
-  <p>This is the trial version of your POS system.</p>
+  <h1>Jalal Barbecue POS</h1>
+  <div id="menu"></div>
+  <div id="cart">
+    <h3>Order Summary</h3>
+    <ul id="cartItems"></ul>
+    <p><strong>Total: Rs. <span id="total">0</span></strong></p>
+    <button onclick="clearCart()">Clear Order</button>
+  </div>
+  <script>
+    const menu = {
+      "Karahi": {
+        "Chicken Karahi": { half: 900, full: 1700 },
+        "Mutton Karahi": { half: 1500, full: 3000 }
+      },
+      "Handi": {
+        "Chicken Handi": { half: 850, full: 1600 }
+      },
+      "Barbecue": {
+        "Special Platter": { full: 3500 }
+      },
+      "Drinks": {
+        "Cold Drink": { full: 70 }
+      }
+    };
+
+    const cart = [];
+
+    function addToCart(name, size, price) {
+      cart.push({ name: `${name} (${size})`, price });
+      renderCart();
+    }
+
+    function renderMenu() {
+      const menuDiv = document.getElementById('menu');
+      for (let category in menu) {
+        const section = document.createElement('div');
+        section.className = 'menu-section';
+        const heading = document.createElement('h2');
+        heading.textContent = category;
+        section.appendChild(heading);
+        for (let item in menu[category]) {
+          const prices = menu[category][item];
+          const div = document.createElement('div');
+          div.className = 'item';
+          for (let size in prices) {
+            const button = document.createElement('button');
+            button.textContent = `${item} (${size}) - Rs. ${prices[size]}`;
+            button.onclick = () => addToCart(item, size, prices[size]);
+            div.appendChild(button);
+          }
+          section.appendChild(div);
+        }
+        menuDiv.appendChild(section);
+      }
+    }
+
+    function renderCart() {
+      const cartItems = document.getElementById('cartItems');
+      const totalSpan = document.getElementById('total');
+      cartItems.innerHTML = '';
+      let total = 0;
+      for (let item of cart) {
+        const li = document.createElement('li');
+        li.textContent = `${item.name} - Rs. ${item.price}`;
+        cartItems.appendChild(li);
+        total += item.price;
+      }
+      totalSpan.textContent = total;
+    }
+
+    function clearCart() {
+      cart.length = 0;
+      renderCart();
+    }
+
+    renderMenu();
+  </script>
 </body>
 </html>
